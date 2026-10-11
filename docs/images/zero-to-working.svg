@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-labelledby="t d">
+  <title id="t">From zero to a working N-ATLAS integration</title>
+  <desc id="d">Five steps: sign up and top up in naira, try N-ATLAS in the Playground, create an API key, call n-atlas from your code, then watch usage and cost in the console.</desc>
+  <rect width="1200" height="300" rx="20" fill="#f6f4fb"/>
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <line x1="140" y1="110" x2="1060" y2="110" stroke="#d9cdf7" stroke-width="4" stroke-linecap="round"/>
+    <g text-anchor="middle">
+      <g transform="translate(140 0)">
+        <circle cy="110" r="34" fill="#6334cb"/><text y="121" font-size="28" font-weight="800" fill="#fff">1</text>
+        <text y="182" font-size="18" font-weight="700" fill="#160c2d">Sign up</text>
+        <text y="208" font-size="14" fill="#665a78">Top up in naira</text>
+        <text y="228" font-size="14" fill="#665a78">by bank transfer</text>
+      </g>
+      <g transform="translate(370 0)">
+        <circle cy="110" r="34" fill="#6334cb"/><text y="121" font-size="28" font-weight="800" fill="#fff">2</text>
+        <text y="182" font-size="18" font-weight="700" fill="#160c2d">Try it</text>
+        <text y="208" font-size="14" fill="#665a78">Pick N-ATLAS in</text>
+        <text y="228" font-size="14" fill="#665a78">the Playground</text>
+      </g>
+      <g transform="translate(600 0)">
+        <circle cy="110" r="34" fill="#6334cb"/><text y="121" font-size="28" font-weight="800" fill="#fff">3</text>
+        <text y="182" font-size="18" font-weight="700" fill="#160c2d">Get a key</text>
+        <text y="208" font-size="14" fill="#665a78">API keys → Create</text>
+        <text y="228" font-size="14" fill="#665a78">keep it on your server</text>
+      </g>
+      <g transform="translate(830 0)">
+        <circle cy="110" r="34" fill="#6334cb"/><text y="121" font-size="28" font-weight="800" fill="#fff">4</text>
+        <text y="182" font-size="18" font-weight="700" fill="#160c2d">Call n-atlas</text>
+        <text y="208" font-size="14" fill="#665a78">Any OpenAI SDK,</text>
+        <text y="228" font-size="14" fill="#665a78">one base URL change</text>
+      </g>
+      <g transform="translate(1060 0)">
+        <circle cy="110" r="34" fill="#2a1260"/><text y="121" font-size="26" font-weight="800" fill="#fff">✓</text>
+        <text y="182" font-size="18" font-weight="700" fill="#160c2d">Ship it</text>
+        <text y="208" font-size="14" fill="#665a78">See every request</text>
+        <text y="228" font-size="14" fill="#665a78">and its cost in ₦</text>
+      </g>
+    </g>
+  </g>
+</svg>

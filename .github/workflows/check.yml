@@ -1,0 +1,34 @@
+name: Check examples
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Shell
+        run: bash -n examples/curl/chat.sh
+      - name: Python
+        run: python -m py_compile examples/python/*.py
+      - name: JavaScript
+        run: |
+          node --check examples/javascript/chat.mjs
+          node --check examples/javascript/support-assistant.mjs
+          node --check examples/web-support-app/server.mjs
+      - name: No keys committed
+        run: |
+          if git grep -nE 'wk_(live|guest)_[A-Za-z0-9]{16,}' -- . ':!*.md' ':!.env.example'; then
+            echo "A Bridge key looks committed. Remove it and revoke it." && exit 1
+          fi

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>N-ATLAS on Bridge: Technical Documentation</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm; }
+  :root { --ink:#160c2d; --muted:#5a4f6e; --line:#e4def0; --accent:#6334cb; --deep:#2a1260; --soft:#f4f0fc; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; color: var(--ink); font: 10.5pt/1.55 "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  h1, h2, h3 { color: var(--deep); line-height: 1.25; }
+  h2 { font-size: 17pt; margin: 0 0 10px; padding-top: 4px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  h3 { font-size: 12pt; margin: 18px 0 6px; }
+  p { margin: 0 0 9px; }
+  ul, ol { margin: 0 0 10px; padding-left: 20px; }
+  li { margin: 2px 0; }
+  a { color: var(--accent); text-decoration: none; }
+  code { font: 9pt/1.4 Menlo, Consolas, monospace; background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+  pre { font: 8.6pt/1.45 Menlo, Consolas, monospace; background: #1c1233; color: #f1ecff; padding: 10px 12px; border-radius: 8px; white-space: pre-wrap; word-break: break-word; margin: 0 0 12px; break-inside: avoid; }
+  pre code { background: none; padding: 0; color: inherit; font: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 9.5pt; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { background: var(--soft); color: var(--deep); font-weight: 700; }
+  td code { white-space: nowrap; }
+  img.figure { width: 100%; border-radius: 10px; margin: 6px 0 12px; break-inside: avoid; }
+  .note { background: var(--soft); border-left: 4px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin: 8px 0 12px; break-inside: avoid; }
+  .section { margin-top: 26px; }
+  .cover { break-after: page; }
+  h2, h3 { break-after: avoid; }
+  h2 + p, h3 + p, h3 + pre, h3 + table, h3 + ul { break-before: avoid; }
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .cover .band { background: linear-gradient(135deg, #2a1260, #6334cb); color: #fff; border-radius: 16px; padding: 34px 32px; }
+  .cover .eyebrow { letter-spacing: 3px; font-size: 10pt; opacity: .8; font-weight: 700; }
+  .cover h1 { color: #fff; font-size: 34pt; margin: 10px 0 8px; letter-spacing: -.5px; }
+  .cover .lead { font-size: 14pt; opacity: .92; margin: 0; }
+  .cover .meta { color: var(--muted); font-size: 10pt; }
+  .toc { columns: 2; column-gap: 28px; font-size: 10.5pt; }
+  .toc li { break-inside: avoid; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; break-inside: avoid; }
+  .card b { color: var(--deep); }
+  .check li { list-style: none; margin-left: -18px; }
+  .check li::before { content: "☐  "; color: var(--accent); }
+  .small { font-size: 9pt; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<section class="cover">
+  <div class="band">
+    <div class="eyebrow">BRIDGE BY WEKOYA · TECHNICAL DOCUMENTATION</div>
+    <h1>N-ATLAS on Bridge</h1>
+    <p class="lead">How to add Nigeria's multilingual model to your product: setup, API, costs, error handling and production practice.</p>
+  </div>
+  <div>
+    <img class="figure" src="images/zero-to-working.svg" alt="From zero to a working integration in five steps">
+    <h3>Contents</h3>
+    <ol class="toc">
+      <li>Overview</li>
+      <li>How it fits together</li>
+      <li>Getting started</li>
+      <li>API reference</li>
+      <li>Code examples</li>
+      <li>When N-ATLAS takes a break</li>
+      <li>Errors</li>
+      <li>Limits</li>
+      <li>Costs</li>
+      <li>Controlling spend</li>
+      <li>Security</li>
+      <li>Writing good prompts in Nigerian languages</li>
+      <li>Production checklist</li>
+      <li>Questions</li>
+      <li>Support</li>
+    </ol>
+  </div>
+  <div class="meta">
+    Version 1.0 · 11 October 2026 · Wekoya Ltd · bridge.wekoya.tech<br>
+    Code examples: github.com/Wekoya/bridge-n-atlas (MIT licence)
+  </div>
+</section>
+
+<!-- 1 -->
+<section class="section">
+  <h2>1. Overview</h2>
+  <p><b>N-ATLAS</b> is Nigeria's multilingual large language model. It understands and writes <b>English, Yorùbá, Hausa and Igbo</b>, so a product can answer people in the language they wrote in.</p>
+  <p><b>Bridge by Wekoya</b> is an AI API built for Nigerian developers. It gives you N-ATLAS, and 90+ other models, through one key, with billing in naira. You don't download the model, rent a GPU or run an inference server. If you can call the OpenAI API, you can call N-ATLAS.</p>
+  <div class="grid">
+    <div class="card"><b>OpenAI-compatible</b><br>Use the official OpenAI SDKs for Python, JavaScript or any other language. Change the base URL and the key.</div>
+    <div class="card"><b>Priced in naira</b><br>Fund by bank transfer. Pay per token. Every reply states its own cost.</div>
+    <div class="card"><b>Graceful when unavailable</b><br>If N-ATLAS is taking a break, Bridge says so at once, charges nothing, and suggests another model.</div>
+    <div class="card"><b>Control and visibility</b><br>Per-key spending limits, per-user budgets, and a log of every request with its tokens and cost.</div>
+  </div>
+  <div class="note"><b>Status: preview.</b> N-ATLAS on Bridge is a preview service. It can be unavailable for short periods. Section 6 shows how to keep your product answering when that happens.</div>
+
+  <h2 style="margin-top:22px">2. How it fits together</h2>
+  <img class="figure" src="images/architecture.svg" alt="Architecture: customer, your app and server, Bridge, N-ATLAS">
+  <ol>
+    <li>Your customer writes a message in your app (web, mobile, chat).</li>
+    <li>Your <b>server</b> sends the conversation to Bridge with your API key. The key never goes to the customer's device.</li>
+    <li>Bridge checks the key, your balance and any limits, and sends the request to N-ATLAS.</li>
+    <li>N-ATLAS answers. Bridge records the tokens used and the cost in naira, and returns the reply with that cost.</li>
+    <li>If N-ATLAS is not answering, Bridge returns <code>model_resting</code> within a second, charges nothing, and names models you can ask instead.</li>
+  </ol>
+</section>
+
+<!-- 3 -->
+<section class="section">
+  <h2>3. Getting started</h2>
+  <h3>Step 1: Create an account and fund it</h3>
+  <p>Sign up at <a href="https://bridge.wekoya.tech">bridge.wekoya.tech</a>. Under <b>Billing</b>, add money in naira:</p>
+  <ul>
+    <li><b>Bank transfer</b> to the account number shown for your account. It usually lands within a minute.</li>
+    <li><b>Card</b>, from ₦100.</li>
+  </ul>
+  <p>There is no subscription. You pay only for what you use.</p>
+  <h3>Step 2: Try N-ATLAS in the Playground</h3>
+  <p>Open <b>Playground</b> in the console, choose <b>N-ATLAS</b> from the model list (marked <i>Preview</i>), and write in English, Yorùbá, Hausa or Igbo. Each reply shows what it cost.</p>
+  <h3>Step 3: Create an API key</h3>
+  <p>Under <b>API keys</b>, create a key. It starts with <code>wk_live_</code> and is shown once. Store it as an environment variable on your server:</p>
+  <pre><code>export BRIDGE_API_KEY=wk_live_...</code></pre>
+  <p>Optionally set a <b>monthly spending limit</b> on the key (Section 10).</p>
+  <h3>Step 4: Make your first request</h3>
+  <pre><code>curl https://wekoya-api.wekoya.tech/v1/chat/completions \
+  -H "Authorization: Bearer $BRIDGE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "n-atlas",
+    "messages": [{"role": "user", "content": "Báwo ni? Dáhùn ní Yorùbá."}]
+  }'</code></pre>
+  <h3>Step 5: Build, then watch it in the console</h3>
+  <p>Every request appears under <b>Usage</b> with its model, tokens and cost in naira. The examples repository (<code>github.com/Wekoya/bridge-n-atlas</code>) has ready-to-run code in curl, Python and JavaScript, and a small web app.</p>
+</section>
+
+<!-- 4 -->
+<section class="section">
+  <h2>4. API reference</h2>
+  <table>
+    <tr><th style="width:28%">Base URL</th><td><code>https://wekoya-api.wekoya.tech/v1</code></td></tr>
+    <tr><th>Authentication</th><td><code>Authorization: Bearer wk_live_...</code></td></tr>
+    <tr><th>Model id</th><td><code>n-atlas</code></td></tr>
+    <tr><th>Chat endpoint</th><td><code>POST /v1/chat/completions</code> (OpenAI Chat Completions format)</td></tr>
+    <tr><th>Catalogue</th><td><code>GET /v1/models?include=experimental</code></td></tr>
+    <tr><th>Format</th><td>JSON in, JSON out, UTF-8. Yorùbá, Hausa and Igbo diacritics are sent as-is.</td></tr>
+  </table>
+
+  <h3>Request</h3>
+  <table>
+    <tr><th style="width:24%">Field</th><th>Meaning</th></tr>
+    <tr><td><code>model</code></td><td><code>"n-atlas"</code>. Required.</td></tr>
+    <tr><td><code>messages</code></td><td>The conversation: objects with <code>role</code> (<code>system</code>, <code>user</code> or <code>assistant</code>) and text <code>content</code>. Required.</td></tr>
+    <tr><td><code>max_tokens</code></td><td>Longest reply, in tokens. Default 1,024.</td></tr>
+    <tr><td><code>temperature</code></td><td>0 to 2. Lower is more predictable, a good choice for support answers.</td></tr>
+    <tr><td><code>stream</code></td><td><code>true</code> for a server-sent event stream. See below.</td></tr>
+    <tr><td><code>X-Bridge-End-User</code> header</td><td>Optional: your own id for the person the request is for, so Bridge can track and limit what each of your users spends (Section 10).</td></tr>
+  </table>
+
+  <h3>Response</h3>
+  <pre><code>{
+  "id": "…",
+  "object": "chat.completion",
+  "model": "n-atlas",
+  "choices": [{
+    "index": 0,
+    "message": { "role": "assistant", "content": "Ẹ jọ̀ọ́, ẹ fi nọ́ńbà ìtọ́kasí ránṣẹ́ sí wa…" },
+    "finish_reason": "stop"
+  }],
+  "usage": { "prompt_tokens": 91, "completion_tokens": 48, "total_tokens": 139 },
+  "wekoya": { "cost": 0.05, "currency": "NGN" }
+}</code></pre>
+  <ul>
+    <li><code>choices[0].message.content</code>: the reply.</li>
+    <li><code>usage</code>: tokens read and written. These are what you pay for.</li>
+    <li><code>wekoya.cost</code>: what this request cost, in naira.</li>
+    <li><code>finish_reason</code>: <code>"length"</code> means the reply reached <code>max_tokens</code>; raise it or ask the model to continue.</li>
+  </ul>
+
+  <h3>Streaming</h3>
+  <p>With <code>"stream": true</code> the reply arrives as server-sent events: <code>data: {…}</code> chunks in OpenAI's format, ending with <code>data: [DONE]</code>. The last chunk carries <code>usage</code> and <code>wekoya.cost</code>. With N-ATLAS the text usually arrives in one chunk rather than word by word, so show a "typing" indicator until it comes. An error after the stream has started arrives as a chunk containing <code>"error"</code>.</p>
+
+  <h3>Finding N-ATLAS in the catalogue</h3>
+  <p>Preview models are left out of <code>GET /v1/models</code> unless you ask, so tools that choose a model from the list never pick one by accident. <code>GET /v1/models?include=experimental</code> lists it with <code>wekoya.experimental: true</code>, <code>wekoya.available</code> (whether it is answering now) and <code>wekoya.cost_per_million</code>.</p>
+</section>
+
+<!-- 5 -->
+<section class="section">
+  <h2>5. Code examples</h2>
+  <h3>Python</h3>
+  <pre><code>import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://wekoya-api.wekoya.tech/v1",
+    api_key=os.environ["BRIDGE_API_KEY"],
+)
+
+reply = client.chat.completions.create(
+    model="n-atlas",
+    max_tokens=300,
+    messages=[
+        {"role": "system", "content": "Reply in the language the user writes in."},
+        {"role": "user", "content": "Sannu! Me za ka iya yi mini?"},
+    ],
+)
+print(reply.choices[0].message.content)</code></pre>
+
+  <h3>JavaScript (Node.js), streamed</h3>
+  <pre><code>import OpenAI from "openai"
+
+const client = new OpenAI({
+  baseURL: "https://wekoya-api.wekoya.tech/v1",
+  apiKey: process.env.BRIDGE_API_KEY,
+})
+
+const stream = await client.chat.completions.create({
+  model: "n-atlas",
+  stream: true,
+  messages: [{ role: "user", content: "Nnọọ! Kedu ka ị mere?" }],
+})
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices?.[0]?.delta?.content ?? "")
+}</code></pre>
+
+  <h3>A web app: keep the key on the server</h3>
+  <p>Browsers and mobile apps must not hold your key. Give your front end an endpoint on your own server, and let the server call Bridge:</p>
+  <pre><code>// POST /api/chat on your server (Node 18+)
+const reply = await fetch("https://wekoya-api.wekoya.tech/v1/chat/completions", {
+  method: "POST",
+  headers: { Authorization: `Bearer ${process.env.BRIDGE_API_KEY}`, "Content-Type": "application/json" },
+  body: JSON.stringify({ model: "n-atlas", max_tokens: 400, messages }),
+  signal: AbortSignal.timeout(60_000),
+})</code></pre>
+  <p class="small">The full app, with rate limiting, input limits, prompt-injection protection and fallback, is in <code>examples/web-support-app</code>. If an app really must call Bridge directly, use short-lived <b>guest keys</b> (bridge.wekoya.tech/docs/guest-keys).</p>
+</section>
+
+<!-- 6 -->
+<section class="section">
+  <h2>6. When N-ATLAS takes a break</h2>
+  <p>N-ATLAS is a preview and can be unavailable for short periods. Bridge never makes you wait for it: it answers within a second and <b>charges nothing</b>.</p>
+  <img class="figure" src="images/resting-fallback.svg" alt="Fallback flow">
+  <pre><code>HTTP 503
+{
+  "error": {
+    "type": "model_resting",
+    "message": "N-ATLAS is taking a short break. Try again in a few minutes, or switch to another model such as gpt-6-luna.",
+    "retryable": true,
+    "suggested_models": ["gpt-6-luna"]
+  }
+}</code></pre>
+  <h3>Recommended handling</h3>
+  <pre><code>from openai import APIStatusError
+
+def ask(messages):
+    try:
+        return client.chat.completions.create(model="n-atlas", messages=messages)
+    except APIStatusError as error:
+        body = error.body if isinstance(error.body, dict) else {}
+        problem = body.get("error", body)
+        if problem.get("type") not in ("model_resting", "model_unavailable"):
+            raise
+        fallback = (problem.get("suggested_models") or ["gpt-6-luna"])[0]
+        return client.chat.completions.create(model=fallback, messages=messages)</code></pre>
+  <ul>
+    <li>Fall back on <code>model_resting</code> (taking a break) and <code>model_unavailable</code> (switched off). Don't retry N-ATLAS in a tight loop.</li>
+    <li>The suggested models also handle Nigerian languages well, so your customer still gets an answer in their language.</li>
+    <li>Record which model answered (it's in the response's <code>model</code> field) if you want to report on it.</li>
+  </ul>
+</section>
+
+<!-- 7 -->
+<section class="section">
+  <h2>7. Errors</h2>
+  <p>Every error has a machine-readable <code>type</code> and a plain-English <code>message</code>. Branch on the type, and show the message to people.</p>
+  <table>
+    <tr><th style="width:9%">Status</th><th style="width:28%">Type</th><th>Meaning and what to do</th></tr>
+    <tr><td>400</td><td><code>invalid_request</code></td><td>The body is malformed. The message names the field.</td></tr>
+    <tr><td>400</td><td><code>tools_not_supported</code></td><td>N-ATLAS can't use tools or function calling. Remove <code>tools</code>, or use another model.</td></tr>
+    <tr><td>400</td><td><code>context_length_exceeded</code></td><td>The conversation is too long (Section 8). Send fewer, more recent turns.</td></tr>
+    <tr><td>400</td><td><code>media_not_supported</code></td><td>N-ATLAS reads text only. Remove images, audio or files, or use another model.</td></tr>
+    <tr><td>401</td><td><code>unauthorized</code></td><td>The key is wrong, revoked or expired. Check <code>BRIDGE_API_KEY</code>.</td></tr>
+    <tr><td>402</td><td><code>insufficient_funds</code></td><td>Your balance can't cover the request. Top up under Billing.</td></tr>
+    <tr><td>402</td><td><code>key_limit_exceeded</code></td><td>The key reached its monthly spending limit. Raise it, or wait for the 1st.</td></tr>
+    <tr><td>402</td><td><code>end_user_budget_exhausted</code></td><td>That user's budget is spent. Your balance is untouched.</td></tr>
+    <tr><td>403</td><td><code>model_not_allowed</code></td><td>The key is restricted to other models. Allow <code>n-atlas</code> on the key.</td></tr>
+    <tr><td>503</td><td><code>model_resting</code></td><td>N-ATLAS is taking a short break. Not charged. Use <code>suggested_models</code> (Section 6).</td></tr>
+    <tr><td>503</td><td><code>model_unavailable</code></td><td>N-ATLAS is switched off for now. Not charged. Use another model.</td></tr>
+    <tr><td>504</td><td><code>timeout</code></td><td>A request that wasn't streamed took too long. Stream it, or ask for a shorter reply.</td></tr>
+  </table>
+  <p class="small">The complete list for all of Bridge is at bridge.wekoya.tech/docs/errors.</p>
+
+  <h2 style="margin-top:20px">8. Limits</h2>
+  <table>
+    <tr><th style="width:34%">Limit</th><th>Value and advice</th></tr>
+    <tr><td>Context window</td><td>About 8,000 tokens for the whole conversation <i>and</i> the reply. Keep the system prompt short and send only the latest turns of a long chat (the examples send the last 10).</td></tr>
+    <tr><td>Reply length</td><td>Up to 1,024 tokens by default. Set <code>max_tokens</code> lower for short support answers: they're faster and cheaper.</td></tr>
+    <tr><td>Input types</td><td>Text only.</td></tr>
+    <tr><td>Tools and function calling</td><td>Not supported.</td></tr>
+    <tr><td>Requests not streamed</td><td>Must finish within about 25 seconds. For long answers, use <code>"stream": true</code>.</td></tr>
+    <tr><td>Availability</td><td>Preview: can be unavailable for short periods (Section 6).</td></tr>
+  </table>
+</section>
+
+<!-- 9 -->
+<section class="section">
+  <h2>9. Costs</h2>
+  <p>You pay for tokens: what N-ATLAS reads (input) and what it writes (output). A token is a piece of a word. In Yorùbá, Hausa and Igbo, words with tone marks can use more tokens than English.</p>
+  <table>
+    <tr><th style="width:45%">Item</th><th>Price</th></tr>
+    <tr><td>Input</td><td><b>₦175.50</b> per million tokens</td></tr>
+    <tr><td>Output</td><td><b>₦526.50</b> per million tokens</td></tr>
+    <tr><td>Refused requests, and requests while N-ATLAS rests</td><td><b>₦0</b></td></tr>
+    <tr><td>Subscription or monthly fee</td><td><b>None</b></td></tr>
+  </table>
+  <p class="small">Prices are those in effect on 11 October 2026 and can change. The current price is always in <code>GET /v1/models?include=experimental</code> (<code>wekoya.cost_per_million</code>) and in the console, and each reply states its exact cost in <code>wekoya.cost</code>. Every charge records the price and exchange rate it used, so any line on a bill can be checked.</p>
+
+  <div style="break-inside: avoid">
+  <h3>Worked examples</h3>
+  <table>
+    <tr><th style="width:44%">Use</th><th style="width:28%">Tokens (in / out)</th><th>Cost</th></tr>
+    <tr><td>One short support reply</td><td>~100 / 50</td><td>≈ ₦0.05</td></tr>
+    <tr><td>One reply in a longer conversation</td><td>~400 / 150</td><td>≈ ₦0.15</td></tr>
+    <tr><td>10,000 replies like that in a month</td><td>4M / 1.5M</td><td>≈ ₦1,490</td></tr>
+    <tr><td>100,000 such replies in a month</td><td>40M / 15M</td><td>≈ ₦14,900</td></tr>
+  </table>
+  </div>
+  <p class="small">Calculation: cost = input tokens × ₦175.50 ÷ 1,000,000 + output tokens × ₦526.50 ÷ 1,000,000. For example, 400 × 0.0001755 + 150 × 0.0005265 = ₦0.149.</p>
+
+  <h3>Paying</h3>
+  <ul>
+    <li>Prepaid balance in naira: bank transfer to your account number, or card (from ₦100).</li>
+    <li>Each request reserves a small amount, then settles at the exact cost. Anything not used is released.</li>
+    <li>The console shows every request and its cost, and your spending over time.</li>
+  </ul>
+
+  <h2 style="margin-top:20px">10. Controlling spend</h2>
+  <ul>
+    <li><b>Key limits:</b> give each key a monthly spending limit in naira. A key that reaches it is refused with <code>key_limit_exceeded</code> until the 1st.</li>
+    <li><b>Allowed models:</b> restrict a key to <code>n-atlas</code> (plus your fallback), so it can't be used for anything else.</li>
+    <li><b>Per-user budgets:</b> send <code>X-Bridge-End-User: &lt;your user id&gt;</code> with each request. Give each user an allowance per period; Bridge tracks it and refuses with <code>end_user_budget_exhausted</code> once it is spent.</li>
+    <li><b>Guest keys:</b> short-lived keys with their own spending cap and expiry, for browser and mobile apps that must call Bridge directly.</li>
+    <li><b>In your own code:</b> cap <code>max_tokens</code>, trim long conversations, and rate-limit each visitor.</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section class="section">
+  <h2>11. Security</h2>
+  <ul>
+    <li>The API key spends your balance. Keep it on your server, in an environment variable or secret manager.</li>
+    <li>Never put the key in browser JavaScript, a mobile app, a screenshot or a repository. Use guest keys for direct client calls.</li>
+    <li>If a key leaks, revoke it under <b>API keys</b> at once and create a new one.</li>
+    <li>Set a monthly limit on every key used in production.</li>
+    <li>Write the system prompt on your server, and never let a browser send it. This stops users rewriting your assistant's instructions.</li>
+    <li>Show model replies as text, not HTML.</li>
+    <li>Tell the assistant never to ask for PINs, passwords or card numbers, and don't send them to it.</li>
+  </ul>
+
+  <h2 style="margin-top:20px">12. Writing good prompts in Nigerian languages</h2>
+  <ul>
+    <li>Say which languages to use: <i>"Reply in the language the customer uses: English, Yorùbá, Hausa or Igbo."</i></li>
+    <li>Keep the system prompt short. Every token of it is sent, and paid for, with each request.</li>
+    <li>Send text with its tone marks (<i>ọ, ẹ, ṣ, ń</i>). Bridge passes UTF-8 through unchanged.</li>
+    <li>Give the assistant clear steps for common cases (for example, a missing transfer: ask for the reference and date, promise a human follow-up).</li>
+    <li>Test with real messages from native speakers, including mixed language ("Mo fi money ránṣẹ́…").</li>
+    <li>Use a low <code>temperature</code> (0.2 to 0.5) for support, where consistent answers matter.</li>
+  </ul>
+
+  <h2 style="margin-top:20px">13. Production checklist</h2>
+  <ul class="check">
+    <li>The key lives on the server only, with a monthly limit set</li>
+    <li><code>model_resting</code> and <code>model_unavailable</code> fall back to a suggested model</li>
+    <li>Long conversations are trimmed to fit about 8,000 tokens</li>
+    <li><code>max_tokens</code> is set for your use case</li>
+    <li>Requests have a timeout (60 seconds is sensible) and errors show Bridge's message</li>
+    <li>Each visitor is rate-limited, and input length is capped</li>
+    <li>Replies are shown as text, not HTML</li>
+    <li>Long answers use streaming</li>
+    <li>Low-balance alerts are on, or your balance is checked regularly</li>
+    <li>Native speakers have tested the prompts</li>
+  </ul>
+</section>
+
+<!-- 14 -->
+<section class="section">
+  <h2>14. Questions</h2>
+  <h3>Do I need a GPU or to download N-ATLAS?</h3>
+  <p>No. Bridge serves it. You send HTTPS requests.</p>
+  <h3>Can I use my existing OpenAI code?</h3>
+  <p>Yes. Change the base URL to <code>https://wekoya-api.wekoya.tech/v1</code>, use your Bridge key, and set <code>model</code> to <code>n-atlas</code>.</p>
+  <h3>Which languages does it support?</h3>
+  <p>English, Yorùbá, Hausa and Igbo.</p>
+  <h3>What happens if N-ATLAS is unavailable?</h3>
+  <p>You get <code>model_resting</code> within a second, you aren't charged, and the error names models to use instead (Section 6).</p>
+  <h3>Am I charged for failed requests?</h3>
+  <p>No. Requests that are refused, or made while N-ATLAS rests, cost nothing.</p>
+  <h3>Why don't I see N-ATLAS in <code>GET /v1/models</code>?</h3>
+  <p>Preview models are listed only with <code>?include=experimental</code>. You can still call <code>n-atlas</code> directly.</p>
+  <h3>Can it call functions or read images?</h3>
+  <p>Not yet. It is text in, text out. For tools or images, use another Bridge model with the same key.</p>
+  <h3>How do I see what I've spent?</h3>
+  <p>In the console under <b>Usage</b>, and on every reply in <code>wekoya.cost</code>.</p>
+  <h3>Can I pay in dollars?</h3>
+  <p>Bridge bills in naira, funded by Nigerian bank transfer or card.</p>
+
+  <h2 style="margin-top:20px">15. Support</h2>
+  <ul>
+    <li>Documentation: <a href="https://bridge.wekoya.tech/docs/n-atlas">bridge.wekoya.tech/docs/n-atlas</a></li>
+    <li>Examples and issues: <a href="https://github.com/Wekoya/bridge-n-atlas">github.com/Wekoya/bridge-n-atlas</a></li>
+    <li>Email: <a href="mailto:contact@wekoya.tech">contact@wekoya.tech</a></li>
+  </ul>
+  <p class="small" style="margin-top:24px">N-ATLAS is Nigeria's multilingual language model, developed by Awarri with the Federal Government of Nigeria. Bridge by Wekoya provides access to it through an API. © 2026 Wekoya Ltd.</p>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560" role="img" aria-labelledby="t d">
+  <title id="t">How N-ATLAS on Bridge fits together</title>
+  <desc id="d">Your customer talks to your app. Your server calls Bridge with your API key. Bridge checks the key, your balance and limits, sends the request to N-ATLAS, records usage and cost in naira, and returns the reply. If N-ATLAS is taking a break, Bridge says so at once, charges nothing and names other models.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6334cb"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8a7fa0"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="560" rx="20" fill="#f6f4fb"/>
+
+  <g font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <!-- Customer -->
+    <g transform="translate(40 200)">
+      <rect width="180" height="120" rx="16" fill="#ffffff" stroke="#e4def0" stroke-width="2"/>
+      <circle cx="90" cy="42" r="18" fill="#efe9fb" stroke="#6334cb" stroke-width="2"/>
+      <path d="M58 92 q32 -34 64 0" fill="none" stroke="#6334cb" stroke-width="2"/>
+      <text x="90" y="112" font-size="16" font-weight="600" fill="#160c2d" text-anchor="middle">Your customer</text>
+    </g>
+
+    <!-- Your app -->
+    <g transform="translate(290 170)">
+      <rect width="220" height="180" rx="16" fill="#ffffff" stroke="#e4def0" stroke-width="2"/>
+      <text x="110" y="40" font-size="18" font-weight="700" fill="#160c2d" text-anchor="middle">Your app</text>
+      <text x="110" y="66" font-size="14" fill="#665a78" text-anchor="middle">web, mobile or chat</text>
+      <rect x="24" y="90" width="172" height="64" rx="10" fill="#efe9fb"/>
+      <text x="110" y="117" font-size="14" font-weight="600" fill="#2a1260" text-anchor="middle">Your server</text>
+      <text x="110" y="139" font-size="13" fill="#665a78" text-anchor="middle">keeps the Bridge key</text>
+    </g>
+
+    <!-- Bridge -->
+    <g transform="translate(580 90)">
+      <rect width="300" height="340" rx="18" fill="#2a1260"/>
+      <text x="150" y="44" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle">Bridge by Wekoya</text>
+      <text x="150" y="68" font-size="13" fill="#d9cdf7" text-anchor="middle">wekoya-api.wekoya.tech/v1</text>
+      <g font-size="14" fill="#ffffff">
+        <rect x="24" y="90" width="252" height="40" rx="10" fill="#ffffff" fill-opacity="0.1"/>
+        <text x="40" y="115">✓  Checks your key and limits</text>
+        <rect x="24" y="140" width="252" height="40" rx="10" fill="#ffffff" fill-opacity="0.1"/>
+        <text x="40" y="165">₦  Bills in naira, per token</text>
+        <rect x="24" y="190" width="252" height="40" rx="10" fill="#ffffff" fill-opacity="0.1"/>
+        <text x="40" y="215">≡  Logs every request</text>
+        <rect x="24" y="240" width="252" height="40" rx="10" fill="#ffffff" fill-opacity="0.1"/>
+        <text x="40" y="265">↺  Says when a model rests</text>
+        <rect x="24" y="290" width="252" height="40" rx="10" fill="#ffffff" fill-opacity="0.1"/>
+        <text x="40" y="315">⇄  One API for 90+ models</text>
+      </g>
+    </g>
+
+    <!-- N-ATLAS -->
+    <g transform="translate(950 150)">
+      <rect width="210" height="150" rx="16" fill="#ffffff" stroke="#6334cb" stroke-width="2.5"/>
+      <text x="105" y="48" font-size="22" font-weight="800" fill="#2a1260" text-anchor="middle">N-ATLAS</text>
+      <text x="105" y="76" font-size="14" fill="#665a78" text-anchor="middle">"model": "n-atlas"</text>
+      <text x="105" y="108" font-size="13" fill="#160c2d" text-anchor="middle">English · Yorùbá</text>
+      <text x="105" y="128" font-size="13" fill="#160c2d" text-anchor="middle">Hausa · Igbo</text>
+    </g>
+
+    <!-- Other models -->
+    <g transform="translate(950 360)">
+      <rect width="210" height="90" rx="16" fill="#ffffff" stroke="#c9bfdc" stroke-width="2" stroke-dasharray="6 5"/>
+      <text x="105" y="40" font-size="16" font-weight="700" fill="#4a3f60" text-anchor="middle">Other models</text>
+      <text x="105" y="64" font-size="13" fill="#665a78" text-anchor="middle">e.g. gpt-6-luna</text>
+    </g>
+
+    <!-- Arrows -->
+    <line x1="222" y1="260" x2="286" y2="260" stroke="#6334cb" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="512" y1="245" x2="576" y2="245" stroke="#6334cb" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="576" y1="285" x2="514" y2="285" stroke="#6334cb" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="882" y1="210" x2="946" y2="210" stroke="#6334cb" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <line x1="946" y1="250" x2="884" y2="250" stroke="#6334cb" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <path d="M882 380 C915 380 915 405 946 405" fill="none" stroke="#8a7fa0" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow-muted)"/>
+
+    <g font-size="13" fill="#665a78">
+      <text x="544" y="234" text-anchor="middle">request</text>
+      <text x="544" y="305" text-anchor="middle">reply + cost</text>
+      <text x="914" y="198" text-anchor="middle">ask</text>
+      <text x="914" y="270" text-anchor="middle">answer</text>
+    </g>
+
+    <text x="600" y="500" font-size="15" fill="#4a3f60" text-anchor="middle">
+      If N-ATLAS is taking a break, Bridge answers at once with model_resting, charges nothing, and names a model to ask instead.
+    </text>
+  </g>
+</svg>

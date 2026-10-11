@@ -1,0 +1,14 @@
+{
+  "name": "bridge-n-atlas-javascript-examples",
+  "private": true,
+  "type": "module",
+  "description": "N-ATLAS through Bridge by Wekoya, from Node.js",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "chat": "node chat.mjs",
+    "support": "node support-assistant.mjs"
+  },
+  "dependencies": {
+    "openai": "^5.0.0"
+  }
+}

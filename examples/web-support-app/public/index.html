@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PayQuick support · N-ATLAS on Bridge</title>
+    <style>
+      :root {
+        --bg: #f6f4fb;
+        --panel: #ffffff;
+        --ink: #160c2d;
+        --muted: #665a78;
+        --line: #e4def0;
+        --accent: #6334cb;
+        --accent-soft: #efe9fb;
+        --mine: #6334cb;
+        --mine-ink: #ffffff;
+        --danger: #b42318;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; place-items: center; padding: 16px; }
+      main { width: 100%; max-width: 640px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; display: flex; flex-direction: column; height: min(760px, calc(100dvh - 32px)); overflow: hidden; }
+      header { padding: 18px 20px; border-bottom: 1px solid var(--line); }
+      header h1 { margin: 0; font-size: 18px; }
+      header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+      #log { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+      .turn { max-width: 85%; padding: 10px 14px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .user { align-self: flex-end; background: var(--mine); color: var(--mine-ink); border-bottom-right-radius: 4px; }
+      .assistant { align-self: flex-start; background: var(--accent-soft); border-bottom-left-radius: 4px; }
+      .meta { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }
+      .error { align-self: stretch; color: var(--danger); background: #fdecea; border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+      .hint { color: var(--muted); font-size: 14px; text-align: center; margin: auto 0; }
+      .samples { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 12px; }
+      .samples button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+      .samples button:hover { border-color: var(--accent); color: var(--accent); }
+      form { display: flex; gap: 8px; padding: 12px 20px 18px; border-top: 1px solid var(--line); }
+      textarea { flex: 1; resize: none; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; min-height: 46px; max-height: 140px; }
+      textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      form button { border: 0; background: var(--accent); color: #fff; border-radius: 12px; padding: 0 18px; font: inherit; font-weight: 600; cursor: pointer; }
+      form button:disabled { opacity: 0.6; cursor: progress; }
+      .typing { color: var(--muted); font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>PayQuick support</h1>
+        <p>Write in English, Yoruba, Hausa or Igbo. Answered by N-ATLAS through Bridge by Wekoya.</p>
+      </header>
+      <section id="log" aria-live="polite">
+        <p class="hint" id="hint">Ask about a transfer, your account or a card. Or try one of these:</p>
+      </section>
+      <div class="samples" id="samples">
+        <button type="button">Mo fi owó ránṣẹ́, ṣùgbọ́n ẹni tí mo fi ránṣẹ́ kò tíì rí i.</button>
+        <button type="button">Na tura kudi amma ba a karba ba.</button>
+        <button type="button">Ezigara m ego, mana onye m zigaara enwetaghị ya.</button>
+        <button type="button">I sent money but the recipient has not received it.</button>
+      </div>
+      <form id="form">
+        <label for="message" style="position:absolute;left:-9999px">Your message</label>
+        <textarea id="message" rows="1" maxlength="1500" placeholder="Type your message…" required></textarea>
+        <button id="send" type="submit">Send</button>
+      </form>
+    </main>
+    <script>
+      const log = document.getElementById("log")
+      const form = document.getElementById("form")
+      const input = document.getElementById("message")
+      const sendButton = document.getElementById("send")
+      const history = []
+
+      // Text only, never HTML: a reply is shown exactly as written.
+      function add(kind, text, meta) {
+        document.getElementById("hint")?.remove()
+        const item = document.createElement("div")
+        item.className = kind === "error" ? "error" : `turn ${kind}`
+        item.textContent = text
+        if (meta) {
+          const small = document.createElement("span")
+          small.className = "meta"
+          small.textContent = meta
+          item.appendChild(small)
+        }
+        log.appendChild(item)
+        log.scrollTop = log.scrollHeight
+        return item
+      }
+
+      async function send(text) {
+        const message = text.trim()
+        if (!message || sendButton.disabled) return
+        history.push({ role: "user", content: message })
+        add("user", message)
+        input.value = ""
+        sendButton.disabled = true
+        const typing = add("assistant", "…")
+        typing.classList.add("typing")
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: history }),
+          })
+          const body = await response.json().catch(() => ({}))
+          typing.remove()
+          if (!response.ok || body.error) {
+            history.pop()
+            add("error", body.error?.message ?? "Something went wrong. Try again.")
+            return
+          }
+          history.push({ role: "assistant", content: body.text })
+          const cost = body.cost === null || body.cost === undefined ? "" : ` · ₦${body.cost}`
+          add("assistant", body.text, `${body.model === "n-atlas" ? "N-ATLAS" : body.model}${cost}`)
+        } catch {
+          typing.remove()
+          history.pop()
+          add("error", "Could not reach the server. Check your connection and try again.")
+        } finally {
+          sendButton.disabled = false
+          input.focus()
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault()
+        send(input.value)
+      })
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault()
+          send(input.value)
+        }
+      })
+      document.getElementById("samples").addEventListener("click", (event) => {
+        if (event.target instanceof HTMLButtonElement) send(event.target.textContent)
+      })
+    </script>
+  </body>
+</html>
